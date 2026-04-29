@@ -15,6 +15,7 @@ import '../../models/submission_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/challenge_provider.dart';
 import '../../services/storage_service.dart';
+import '../../services/supabase_service.dart';
 
 const int _maxSubmissionsPerChallenge = 3;
 
@@ -189,6 +190,13 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
       final firestoreService = ref.read(firestoreServiceProvider);
       await firestoreService.createSubmission(submission);
+
+      // Sync submission ke Supabase (relational database)
+      try {
+        await SupabaseService.instance.createSubmission(submission);
+      } catch (e) {
+        debugPrint('Gagal sync submission ke Supabase (kemungkinan challenge_id tidak ada di DB): $e');
+      }
 
       // Award XP for submitting
       await firestoreService.incrementUserField(uid, 'total_xp', 10);
