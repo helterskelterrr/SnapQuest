@@ -6,6 +6,7 @@ import '../models/vote_model.dart';
 import '../models/comment_model.dart';
 import '../core/utils/date_helper.dart';
 import '../core/utils/notification_service.dart';
+import 'supabase_service.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -853,6 +854,16 @@ class FirestoreService {
       'read': false,
       'created_at': FieldValue.serverTimestamp(),
     });
+
+    // Sync ke Supabase (relational database)
+    await SupabaseService.instance.createNotification(
+      recipientId: recipientId,
+      senderId: voterId,
+      type: 'vote',
+      message: body,
+      submissionId: submissionId,
+    );
+
     // Send push notification to recipient's device
     await NotificationService().sendPushToUser(
       recipientUid: recipientId,
@@ -942,6 +953,20 @@ class FirestoreService {
       'read': false,
       'created_at': FieldValue.serverTimestamp(),
     });
+
+    // Sync ke Supabase (relational database)
+    try {
+      await SupabaseService.instance.createNotification(
+        recipientId: recipientId,
+        senderId: commenterId,
+        type: 'comment',
+        message: body,
+        submissionId: submissionId,
+      );
+    } catch (e) {
+      debugPrint('Gagal sync notifikasi ke Supabase: $e');
+    }
+
     // Send push notification to recipient's device
     await NotificationService().sendPushToUser(
       recipientUid: recipientId,
