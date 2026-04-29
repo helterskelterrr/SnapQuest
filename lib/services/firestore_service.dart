@@ -964,7 +964,7 @@ class FirestoreService {
         submissionId: submissionId,
       );
     } catch (e) {
-      debugPrint('Gagal sync notifikasi ke Supabase: $e');
+      print('Gagal sync notifikasi ke Supabase: $e');
     }
 
     // Send push notification to recipient's device
