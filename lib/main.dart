@@ -56,7 +56,8 @@ void main() async {
   await notificationService.scheduleDailyNotifications();
 
   // Save FCM token when user is already logged in (e.g. app restart)
-  final currentUser = FirebaseAuth.instance.currentUser;
+  // Gunakan authStateChanges().first agar tidak null secara sinkron di awal
+  final currentUser = await FirebaseAuth.instance.authStateChanges().first;
   if (currentUser != null) {
     await notificationService.saveFcmToken(currentUser.uid);
     
