@@ -1,6 +1,10 @@
 # snapquest
 
-A new Flutter project.
+Project ini merupakan implementasi dari sosial media dan game dengan mengimplementasikan theme-based pics challenge dan quest yang tidak hanya membuat orang-orang berlomba-lomba membagikan foto terbaiknya tetapi juga dengan ingin menjadi lebih baik dengan achievement yang didapat.
+
+Menggunakan Firebase Auth, Firestore, dan Cloudinary untuk storage gratis.
+
+link demo : https://youtu.be/lUhKL75O7lQ?si=5dvIjvS--sdTphFU
 
 ## Getting Started
 
