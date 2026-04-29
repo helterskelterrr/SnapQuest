@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'firebase_options.dart';
 import 'core/constants/app_colors.dart';
 import 'core/utils/notification_service.dart';
@@ -38,6 +40,12 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Initialize Supabase (relational database)
+  await Supabase.initialize(
+    url: 'https://ghjchrjykfnzpsdcuujt.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoamNocmp5a2ZuenBzZGN1dWp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MDM3MTUsImV4cCI6MjA5Mjk3OTcxNX0.L_5xDEQOFz7A4XGaaIbr8_thptNJX10HrlbyIOGCuBE',
+  );
+
   // Register FCM background handler before anything else
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
@@ -51,6 +59,28 @@ void main() async {
   final currentUser = FirebaseAuth.instance.currentUser;
   if (currentUser != null) {
     await notificationService.saveFcmToken(currentUser.uid);
+    
+    // Sinkronisasi data user dari Firestore ke Supabase 
+    // untuk mencegah error Foreign Key bagi pengguna lama
+    try {
+      final firestoreDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+          
+      if (firestoreDoc.exists) {
+        final data = firestoreDoc.data()!;
+        await Supabase.instance.client.from('users').upsert({
+          'id': currentUser.uid,
+          'username': data['username'] ?? '',
+          'username_lower': data['username_lower'] ?? (data['username'] ?? '').toLowerCase(),
+          'email': data['email'] ?? currentUser.email ?? '',
+          'photo_url': data['photo_url'] ?? '',
+        });
+      }
+    } catch (e) {
+      debugPrint('Gagal sinkronisasi user ke Supabase: $e');
+    }
   }
 
   runApp(const ProviderScope(child: SnapQuestApp()));

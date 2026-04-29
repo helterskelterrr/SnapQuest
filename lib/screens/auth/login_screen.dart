@@ -6,6 +6,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/utils/notification_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
+import '../../services/supabase_service.dart';
 
 final _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
 
@@ -60,6 +61,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // Save FCM token for push notifications
       if (credential.user != null) {
         await NotificationService().saveFcmToken(credential.user!.uid);
+        
+        // Sync ke Supabase untuk pengguna lama agar tidak error Foreign Key
+        try {
+          final firestoreDoc = await ref.read(firestoreServiceProvider)
+              .getUser(credential.user!.uid);
+              
+          if (firestoreDoc != null) {
+            await SupabaseService.instance.createUser(
+              uid: credential.user!.uid,
+              username: firestoreDoc.username.toLowerCase(),
+              email: firestoreDoc.email,
+              photoUrl: firestoreDoc.photoUrl,
+            );
+          }
+        } catch (e) {
+          debugPrint('Gagal sinkronisasi user ke Supabase saat login: $e');
+        }
       }
       // GoRouter akan otomatis redirect ke /home karena authState berubah
     } on FirebaseAuthException catch (e) {
@@ -354,6 +372,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           displayName: _nameCtrl.text.trim(),
           username: _userCtrl.text.trim().toLowerCase(),
           avatarColor: hexColor,
+        );
+
+        // Sync user ke Supabase (relational database)
+        await SupabaseService.instance.createUser(
+          uid: credential.user!.uid,
+          username: _userCtrl.text.trim().toLowerCase(),
+          email: _emailCtrl.text.trim(),
+          photoUrl: hexColor,
         );
 
         // 3. Save FCM token while we still have the authenticated uid
