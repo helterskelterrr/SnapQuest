@@ -1,8 +1,10 @@
 # snapquest
 
+	
 Project ini merupakan implementasi dari sosial media dan game dengan mengimplementasikan theme-based pics challenge dan quest yang tidak hanya membuat orang-orang berlomba-lomba membagikan foto terbaiknya tetapi juga dengan ingin menjadi lebih baik dengan achievement yang didapat.
 
-Menggunakan Firebase Auth, Firestore, dan Cloudinary untuk storage gratis.
+Menggunakan Kamera; Notifikasi; Supabase untuk relational database; Firebase Auth untuk autentikasi; Firestore untuk menyimpan data submission, id, dll; dan Cloudinary untuk storage gratis.
+Mohon maaf untuk storage-nya saya tidak menggunakan firebase storage dikarenakan harus mencantumkan kartu kredit/debit dan somehow punya saya tidak valid. Maka solusi yang saya pakai yaitu menggunakan cloudinary yang gratis.
 
 link demo : https://youtu.be/lUhKL75O7lQ?si=5dvIjvS--sdTphFU
 
