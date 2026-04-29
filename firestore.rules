@@ -74,7 +74,9 @@ service cloud.firestore {
       // Only comment owner or admin can delete
       allow delete: if isLoggedIn() &&
                        (request.auth.uid == resource.data.user_id || isAdmin());
-      allow update: if isAdmin();
+      // Owner can update their own comments (e.g. username/photo sync); admin can update any
+      allow update: if isLoggedIn() &&
+                       (request.auth.uid == resource.data.user_id || isAdmin());
     }
   }
 }

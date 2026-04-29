@@ -63,36 +63,42 @@ class FirestoreService {
   }
 
   Future<void> updateUserProfile(String uid, String username, String photoUrl, {String? bio}) async {
-    final batch = _db.batch();
+    // Update user doc first — must not be in the same batch as comments
+    // because comments allow update only for admin by default.
     final userRef = _db.collection('users').doc(uid);
-
     final userUpdate = <String, dynamic>{
       'username': username,
       'username_lower': username.toLowerCase(),
       'photo_url': photoUrl,
     };
     if (bio != null) userUpdate['bio'] = bio;
-    batch.update(userRef, userUpdate);
+    await userRef.update(userUpdate);
 
-    // Update submissions
+    // Update submissions (user owns these, allowed)
     final subSnapshot = await _db.collection('submissions').where('user_id', isEqualTo: uid).get();
-    for (final doc in subSnapshot.docs) {
-      batch.update(doc.reference, {
-        'username': username,
-        'user_photo_url': photoUrl,
-      });
+    if (subSnapshot.docs.isNotEmpty) {
+      final subBatch = _db.batch();
+      for (final doc in subSnapshot.docs) {
+        subBatch.update(doc.reference, {
+          'username': username,
+          'user_photo_url': photoUrl,
+        });
+      }
+      await subBatch.commit();
     }
 
-    // Update comments
+    // Update comments (best-effort — rules may restrict this)
     final commentSnapshot = await _db.collection('comments').where('user_id', isEqualTo: uid).get();
-    for (final doc in commentSnapshot.docs) {
-      batch.update(doc.reference, {
-        'username': username,
-        'user_photo_url': photoUrl,
-      });
+    if (commentSnapshot.docs.isNotEmpty) {
+      final commentBatch = _db.batch();
+      for (final doc in commentSnapshot.docs) {
+        commentBatch.update(doc.reference, {
+          'username': username,
+          'user_photo_url': photoUrl,
+        });
+      }
+      await commentBatch.commit().catchError((_) {});
     }
-
-    await batch.commit();
   }
 
   Future<void> incrementUserField(
