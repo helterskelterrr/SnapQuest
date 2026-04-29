@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/storage_service.dart';
+import '../../services/supabase_service.dart';
 
 const _colors = [
   Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFF22C55E),
@@ -290,6 +291,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       }
 
       await service.updateUserProfile(uid, newUsername, photoValue, bio: _bioCtrl.text.trim());
+
+      // Sync ke Supabase (relational database)
+      await SupabaseService.instance.updateUserProfile(
+        uid: uid,
+        username: newUsername,
+        photoUrl: photoValue,
+        bio: _bioCtrl.text.trim(),
+      );
 
       if (!mounted) return;
       setState(() => _saving = false);
