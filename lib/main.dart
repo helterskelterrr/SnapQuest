@@ -83,8 +83,8 @@ final _routerProvider = Provider<GoRouter>((ref) {
 
       // Logika Redirect
       if (!isAuth) {
-        // Belum login: paksa ke /login kecuali sudah di /login atau /register
-        if (location == '/login' || location == '/register') return null;
+        // Belum login: paksa ke /login kecuali sudah di /login, /register, atau /splash
+        if (location == '/splash' || location == '/login' || location == '/register') return null;
         return '/login';
       } else {
         // Sudah login: jangan biarkan di halaman public
