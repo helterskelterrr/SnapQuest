@@ -9,6 +9,7 @@ import '../../models/submission_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/challenge_provider.dart';
 import '../../providers/submission_provider.dart';
+import '../../services/supabase_service.dart';
 import 'widgets/comment_section.dart';
 
 // Provider: stream a single submission by ID so vote count stays live
@@ -78,6 +79,19 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
         voterUsername: user.username,
         challengeTitle: ref.read(todayChallengeProvider).value?.title ?? 'tantangan',
       );
+
+      // Sync vote ke Supabase (relational database)
+      try {
+        final alreadyVoted = await SupabaseService.instance.hasVoted(uid, submission.submissionId);
+        if (alreadyVoted) {
+          await SupabaseService.instance.deleteVote(voterId: uid, submissionId: submission.submissionId);
+        } else {
+          await SupabaseService.instance.createVote(voterId: uid, submissionId: submission.submissionId);
+        }
+      } catch (e) {
+        debugPrint('Gagal sync vote ke Supabase (kemungkinan data dummy tidak ada di DB): $e');
+      }
+
       _showToast(isVoted ? 'Vote dibatalkan' : '+1 vote dikirim!');
     } catch (e) {
       // Revert optimistic

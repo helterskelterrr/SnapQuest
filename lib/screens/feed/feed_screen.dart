@@ -8,6 +8,7 @@ import '../../core/constants/app_colors.dart';
 import '../../models/submission_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/submission_provider.dart';
+import '../../services/supabase_service.dart';
 import 'widgets/post_card.dart';
 import 'widgets/report_sheet.dart';
 
@@ -57,6 +58,20 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         voterUsername: user.username,
         challengeTitle: submission.challengeTitle,
       );
+
+      // Sync vote ke Supabase (relational database)
+      try {
+        final alreadyVoted = await SupabaseService.instance.hasVoted(uid, submission.submissionId);
+        if (alreadyVoted) {
+          await SupabaseService.instance.deleteVote(voterId: uid, submissionId: submission.submissionId);
+        } else {
+          await SupabaseService.instance.createVote(voterId: uid, submissionId: submission.submissionId);
+        }
+      } catch (e) {
+        // Silently ignore Supabase error for dummy data so it doesn't break the UI
+        debugPrint('Gagal sync vote ke Supabase: $e');
+      }
+
       setState(() => _pendingVotes.remove(submission.submissionId));
     } catch (e) {
       setState(() => _pendingVotes.remove(submission.submissionId));

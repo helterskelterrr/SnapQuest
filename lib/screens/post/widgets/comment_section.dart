@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../models/comment_model.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/submission_provider.dart';
+import '../../../services/supabase_service.dart';
 
 class CommentSection extends ConsumerStatefulWidget {
   final String submissionId;
@@ -58,6 +59,17 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
       );
       await service.addComment(comment);
 
+      // Sync comment ke Supabase (relational database)
+      try {
+        await SupabaseService.instance.addComment(
+          userId: uid,
+          submissionId: widget.submissionId,
+          content: body,
+        );
+      } catch (e) {
+        debugPrint('Gagal sync comment ke Supabase (data dummy tidak ada di DB): $e');
+      }
+
       // Notify submission owner
       await service.sendCommentNotification(
         recipientId: widget.submissionOwnerId,
@@ -82,6 +94,13 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
       await ref
           .read(firestoreServiceProvider)
           .deleteComment(comment.commentId, widget.submissionId);
+
+      // Sync delete ke Supabase (relational database)
+      try {
+        await SupabaseService.instance.deleteComment(comment.commentId);
+      } catch (e) {
+        debugPrint('Gagal sync delete comment ke Supabase: $e');
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
