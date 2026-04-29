@@ -1,0 +1,151 @@
+Design a complete mobile app UI for "SnapQuest" — a daily photo 
+challenge game for Android/iOS built with Flutter. 
+
+The app works like this: every day, all users get the same photo 
+challenge (e.g. "Foto sesuatu berbentuk lingkaran"). Users take a 
+photo, submit it to a community feed, vote for others' photos, and 
+compete on a weekly leaderboard. Points come from submitting and 
+receiving votes.
+
+---
+
+DESIGN STYLE:
+- Style: Modern dark mode with vibrant accent colors
+- Primary color: Deep violet / indigo (#1E1B4B background, 
+  #6366F1 accent)
+- Secondary accent: Warm amber (#F59E0B) for highlights, 
+  streaks, and rewards
+- Surface color: #2D2A5E (cards), #0F0D2E (background)
+- Text: White primary, #A5B4FC secondary
+- Font: Inter or Plus Jakarta Sans — bold for headings, 
+  regular for body
+- Corner radius: 16px for cards, 12px for buttons, 24px for 
+  bottom sheets
+- Spacing system: 8dp grid
+- Vibe: Feels like a game, not a utility app. Fun, rewarding, 
+  competitive.
+
+---
+
+SCREENS TO DESIGN (8 screens total):
+
+1. SPLASH / ONBOARDING SCREEN
+   - App logo "SnapQuest" with camera + quest icon
+   - Tagline: "Satu foto. Satu tantangan. Setiap hari."
+   - CTA button: "Mulai Bermain"
+   - Subtext: "Sudah punya akun? Masuk"
+
+2. LOGIN SCREEN
+   - Email + password input fields
+   - Login button (primary, full width)
+   - "Belum punya akun? Daftar" link
+   - Clean, minimal — dark themed
+
+3. REGISTER SCREEN
+   - Username, email, password fields
+   - Avatar picker (circle placeholder with camera icon)
+   - Register button
+   - "Sudah punya akun? Masuk" link
+
+4. HOME SCREEN (main screen)
+   Top section:
+   - Header: greeting + user avatar top right
+   - Weekly points badge + current rank label
+   
+   Challenge Card (prominent, center):
+   - Large card with challenge title in big bold text
+   - Example: "📸 Foto sesuatu berbentuk lingkaran"
+   - Challenge description subtitle
+   - Time remaining countdown (e.g. "Berakhir dalam 14j 22m")
+   - Big CTA button: "Ambil Foto Sekarang" (amber/gold color)
+   - If already submitted: show submitted photo thumbnail 
+     with green checkmark "Sudah Submit ✓"
+   
+   Daily Quest section below:
+   - 3 mini checklist items with progress
+     ✅ Submit foto hari ini (+10 XP)
+     ⬜ Dapat 3 vote (+15 XP)  
+     ⬜ Vote 5 foto orang lain (+10 XP)
+   
+   Bottom section:
+   - "Photo of the Day" — yesterday's winner with username 
+     and vote count
+
+5. CAMERA / SUBMIT SCREEN
+   - Full screen camera preview
+   - Capture button (large circle, white) centered at bottom
+   - After capture: photo preview with caption input field
+   - Challenge reminder banner at top: 
+     "Challenge: Foto sesuatu berbentuk lingkaran"
+   - Submit button (full width, amber)
+   - Retake option (ghost button)
+
+6. COMMUNITY FEED SCREEN
+   - Header: "Feed Hari Ini" + remaining vote count badge 
+     ("3 vote tersisa")
+   - Filter tabs: Terbaru | Terpopuler
+   - Submission cards (full width, stacked vertically):
+     * User avatar + username + time ago
+     * Photo (full width, 4:3 ratio, rounded corners)
+     * Caption text
+     * Bottom row: ❤️ [vote count] | 🚩 [report button] 
+       | vote button (filled if already voted)
+     * If 3+ reports: blurred with "Konten dilaporkan" overlay
+   - Floating: vote limit indicator
+
+7. LEADERBOARD SCREEN
+   - Tab toggle: Minggu Ini | Semua Waktu
+   - Top 3 podium design (rank 1 center elevated, 
+     rank 2 left, rank 3 right) with avatars and crowns
+   - List below for rank 4-20:
+     Rank number | Avatar | Username | Points | XP Badge
+   - Current user's rank highlighted (sticky at bottom 
+     if not in top 20)
+
+8. PROFILE SCREEN
+   - Avatar (large, circular) + edit icon
+   - Username + rank badge (e.g. "🌟 Rising Shooter")
+   - Stats row: Total Poin | Total Submit | Vote Diterima
+   - XP Progress bar to next rank
+   - "Riwayat Submission" grid (3-column photo grid, 
+     Instagram-style)
+   - Logout button (bottom, ghost/outlined)
+
+---
+
+BOTTOM NAVIGATION BAR (persistent across screens 4-8):
+4 tabs with icons + labels:
+🏠 Home | 📰 Feed | 🏆 Leaderboard | 👤 Profil
+Active tab: accent color (indigo), inactive: muted
+
+---
+
+COMPONENT SPECS:
+- All cards: 16px padding, 16px border radius, 
+  slightly lighter than background
+- Buttons: 56px height, 12px border radius, 
+  Inter SemiBold 16px
+- Input fields: 56px height, 12px border radius, 
+  subtle border (#3D3A6E)
+- Avatar: always circular
+- Photo cards in feed: 4:3 aspect ratio
+- Touch targets: minimum 48x48dp for all interactive elements
+- Use skeleton loaders for loading states on feed
+
+---
+
+INTERACTIONS TO ANNOTATE:
+- Vote button: empty heart → filled heart animation
+- Submit button: disabled until photo taken
+- Challenge card: pulse animation on CTA button
+- Report: confirm bottom sheet before reporting
+
+---
+
+OUTPUT:
+Create all 8 screens in a single Figma frame set, 
+mobile size 390x844px (iPhone 14 standard). 
+Use auto-layout for all components. 
+Include both the default state and one interactive 
+state per key component (e.g., voted vs unvoted, 
+submitted vs not submitted).

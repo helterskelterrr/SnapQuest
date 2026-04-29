@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "84352879874",
+    "project_id": "snapquest-938f4",
+    "storage_bucket": "snapquest-938f4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84352879874:android:4801d1e39af61c96d3461b",
+        "android_client_info": {
+          "package_name": "com.snapquest.snapquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCruzpb_omINGlaldHUeDRdNDWaEcGRnRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
